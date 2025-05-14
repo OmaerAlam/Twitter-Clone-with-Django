@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+  <h2 class="text-center mb-4">Explore Profiles</h2>
+
+  {% if profiles %}
+    <div class="row g-4 justify-content-center">
+      {% for profile in profiles %}
+        <div class="col-md-6 col-lg-4">
+          <a href="{% url 'profile' profile.user.id %}" class="text-decoration-none text-dark">
+            <div class="card shadow-sm border-0 h-100 profile-card p-3">
+              <div class="d-flex align-items-center">
+                <div class="me-3">
+                  {% if profile.profile_image %}
+                    <img src="{{ profile.profile_image.url }}" class="rounded-circle" style="width: 80px; height: 80px; object-fit: cover;" alt="{{ profile.user.username }}">
+                  {% else %}
+                    <img src="{% static 'images/default_profile_pic.png' %}" class="rounded-circle" style="width: 80px; height: 80px; object-fit: cover;" alt="Default Profile Image">
+                  {% endif %}
+                </div>
+                <div>
+                  <h5 class="mb-1">{{ profile.user.get_full_name|default:profile.user.username }}</h5>
+                  <p class="mb-1 text-muted">@{{ profile.user.username|lower }}</p>
+                  <small class="text-muted">Last updated {{ profile.date_modified|date:"M d, Y" }}</small>
+                </div>
+              </div>
+            </div>
+          </a>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="text-center text-muted">No profiles found.</p>
+  {% endif %}
+</div>
+
+<style>
+  .profile-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border-radius: 1rem;
+  }
+
+  .profile-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+    background-color: #f9f9f9;
+  }
+
+  .profile-card img {
+    border: 2px solid #ddd;
+  }
+
+  h5, p {
+    margin-bottom: 0.4rem;
+  }
+</style>
+{% endblock %}

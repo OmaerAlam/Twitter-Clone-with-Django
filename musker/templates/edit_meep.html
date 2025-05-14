@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+  <div class="container text-center">
+    <div class="row">
+      <div class="col-8">
+
+        <br/>
+        
+        <!-- Meep Alert Box -->
+        <div class="alert alert-dark" role="alert">
+          <div class="container">
+            <div class="row">
+              <div class="col-1">
+                <!-- Profile Picture -->
+                {% if meep.user.profile.profile_image %}
+                  <img src="{{ meep.user.profile.profile_image.url }}" width="50" height="50" class="rounded-circle" alt="{{ meep.user.username }}">
+                {% else %}
+                  <img src="{% static 'images/default_profile_pic.png' %}" width="50" height="50" class="rounded-circle" alt="{{ meep.user.username }}">
+                {% endif %}
+              </div>
+
+              <div class="col-11">
+                <!-- Meep Body -->
+                <p>{{ meep.body }}</p>
+                <small class="text-muted">
+                  ({{ meep.created_at }}) By @{{ meep.user.username }} - {{ meep.number_of_likes }} Likes
+
+                  <!-- Like Button -->
+                  {% if user in meep.likes.all %}
+                    <a href="{% url 'meep_like' meep.id %}">
+                      <i class="fa-solid fa-heart" style="color:red"></i>
+                    </a>
+                  {% else %}
+                    <a href="{% url 'meep_like' meep.id %}">
+                      <i class="fa fa-heart-o" style="color:red"></i>
+                    </a>
+                  {% endif %}
+                </small>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Form to Edit Meep -->
+        <br/><br/>
+        {% if form %}
+          <form method="POST">
+            {% csrf_token %}
+            {{ form.as_p }}
+
+            <button type="submit" class="btn btn-secondary">Edit Meep!</button>
+          </form>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+{% endblock %}

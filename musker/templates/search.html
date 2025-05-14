@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Title -->
+<h1>Search Meeps!</h1>
+<br/>
+
+<!-- Search Form -->
+<form method="get" class="d-flex" role="search">
+    <input type="text" name="search" class="form-control me-2" placeholder="Search Meeps..." value="{{ request.GET.search }}">
+    <button type="submit" class="btn btn-outline-secondary">Search</button>
+</form>
+
+<br/>
+
+{% if search %}
+    <h4>Results for: <em>{{ search }}</em></h4>
+    <hr/>
+
+    {% if searched %}
+        {% for meep in searched %}
+            <div class="alert alert-dark">
+                <div class="d-flex align-items-start">
+                    {% if meep.user.profile.profile_image %}
+                        <img src="{{ meep.user.profile.profile_image.url }}" width="50" height="50" class="rounded-circle me-3" alt="{{ meep.user.username }}">
+                    {% else %}
+                        <img src="{% static 'images/default_profile_pic.png' %}" width="50" height="50" class="rounded-circle me-3" alt="{{ meep.user.username }}">
+                    {% endif %}
+
+                    <div>
+                        <p>{{ meep.body }}</p>
+                        <small class="text-muted">
+                            ({{ meep.created_at }}) by @{{ meep.user.username }} • {{ meep.number_of_likes }} likes
+                            &nbsp;
+                            {% if user in meep.likes.all %}
+                                <a href="{% url 'meep_like' meep.id %}">
+                                    <i class="fa-solid fa-heart" style="color:red"></i>
+                                </a>
+                            {% else %}
+                                <a href="{% url 'meep_like' meep.id %}">
+                                    <i class="fa fa-heart-o" style="color:red"></i>
+                                </a>
+                            {% endif %}
+                            &nbsp;
+                            <a href="{% url 'meep_show' meep.id %}">
+                                <i class="fa-solid fa-share" style="color:gray"></i>
+                            </a>
+                        </small>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p class="text-muted">No meeps matched your search.</p>
+    {% endif %}
+{% endif %}
+{% endblock %}

@@ -1,19 +1,66 @@
+{% load static %}
+
+<!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
   <div class="container-fluid">
-    <a class="navbar-brand" href="{% url 'home' %}">Musker</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <!-- Navbar Brand (Centered) -->
+    <a class="navbar-brand mx-auto" href="{% url 'home' %}">Home</a>
+
+    <!-- Navbar Toggle Button for Mobile -->
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+
+    <!-- Navbar Menu -->
+    <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        <li class="nav-item">
-          <a class="nav-link" href="#">Link</a>
-        </li>
+        {% if user.is_authenticated %}
+          <!-- Profile List Link (Only shown if logged in) -->
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'profile_list' %}">Profile List</a>
+          </li>
+        {% endif %}
+
+        <!-- Login and Register Links (Only shown if not logged in) -->
+        {% if not user.is_authenticated %}
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'register' %}">Register</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'login' %}">Login</a>
+          </li>
+        {% endif %}
       </ul>
-      <form class="d-flex" role="search">
-        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search"/>
-        <button class="btn btn-outline-success" type="submit">Search</button>
+
+      <!-- Search Box -->
+      <form method="get" action="{% url 'search' %}">
+        <input type="text" name="search" placeholder="Search Meeps..." required>
+        <button type="submit">Search</button>
       </form>
+
+      <!-- User Profile and Options (Only shown if logged in) -->
+      {% if user.is_authenticated %}
+        <ul class="navbar-nav ms-auto">  <!-- 'ms-auto' for right alignment -->
+          <li class="nav-item dropdown">
+            <!-- Profile Dropdown -->
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              {% if user.profile.profile_image %}
+                <img src="{{ user.profile.profile_image.url }}" class="rounded-circle" width="30" alt="Profile Image">
+              {% else %}
+                <img src="{% static 'images/default_profile_pic.png' %}" class="img-fluid rounded-circle" alt="Default Profile" width="30">
+              {% endif %}
+              {{ user.username }}
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+              <!-- Dropdown Items -->
+              <li><a class="dropdown-item" href="{% url 'profile' request.user.id %}">My Profile</a></li>
+              <li><a class="dropdown-item" href="{% url 'update_user' %}">Update Profile</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
+            </ul>
+          </li>
+        </ul>
+      {% endif %}
     </div>
   </div>
 </nav>

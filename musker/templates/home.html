@@ -1,4 +1,93 @@
 {% extends 'base.html' %}
+{% load widget_tweaks %}
+{% load static %}
+
 {% block content %}
-<h1>Meeps!</h1>
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+
+      <!-- Meep Post Form at Top (Visible only if the user is authenticated) -->
+      {% if user.is_authenticated %}
+        <div class="card my-3 shadow-sm">
+          <div class="card-body d-flex">
+            <!-- Current User Profile Picture -->
+            <div class="me-3">
+              {% if user.profile.profile_image %}
+                <img src="{{ user.profile.profile_image.url }}" width="50" height="50" class="rounded-circle" alt="Profile Picture">
+              {% else %}
+                <img src="{% static 'images/default_profile_pic.png' %}" width="50" height="50" class="rounded-circle" alt="Profile Picture">
+              {% endif %}
+            </div>
+
+            <!-- Form -->
+            <div class="flex-grow-1">
+              {% if form %}
+                <form method="POST">
+                  {% csrf_token %}
+                  {{ form.body|add_class:"form-control mb-2" }}
+                  <button type="submit" class="btn btn-primary float-end mt-2">Post</button>
+                </form>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      {% else %}
+        <!-- Message for unauthenticated users -->
+        <div class="alert alert-info my-3 text-center">
+          Please <a href="{% url 'login' %}" class="alert-link">log in</a> to post.
+        </div>
+      {% endif %}
+
+      <!-- Meeps -->
+      {% if meeps %}
+        {% for meep in meeps %}
+          <div class="card mb-3 shadow-sm">
+            <div class="card-body d-flex">
+              <!-- Author Profile Picture -->
+              <div class="me-3">
+                {% if meep.user.profile.profile_image %}
+                  <img src="{{ meep.user.profile.profile_image.url }}" width="50" height="50" class="rounded-circle" alt="{{ meep.user.username }}">
+                {% else %}
+                  <img src="{% static 'images/default_profile_pic.png' %}" width="50" height="50" class="rounded-circle" alt="{{ meep.user.username }}">
+                {% endif %}
+              </div>
+
+              <!-- Meep Content -->
+              <div class="flex-grow-1">
+                <strong>@{{ meep.user.username }}</strong><br>
+                <p class="mb-1">{{ meep.body }}</p>
+                <small class="text-muted">
+                  {{ meep.created_at|date:"M d, Y h:i A" }}
+                </small>
+                <div class="mt-2">
+                  <!-- Like Button -->
+                  <span class="me-2">
+                    {% if user in meep.likes.all %}
+                      <a href="{% url 'meep_like' meep.id %}" class="text-danger">
+                        <i class="fa-solid fa-heart"></i> {{ meep.number_of_likes }}
+                      </a>
+                    {% else %}
+                      <a href="{% url 'meep_like' meep.id %}" class="text-secondary">
+                        <i class="fa fa-heart-o"></i> {{ meep.number_of_likes }}
+                      </a>
+                    {% endif %}
+                  </span>
+
+                  <!-- Share Button -->
+                  <a href="{% url 'meep_show' meep.id %}" class="text-secondary me-2">
+                    <i class="fa-solid fa-share"></i>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      {% else %}
+        <p class="text-center text-muted">No Meeps yet!</p>
+      {% endif %}
+
+    </div>
+  </div>
+</div>
 {% endblock %}

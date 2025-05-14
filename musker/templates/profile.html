@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+{% if profile %}
+<div class="container mt-3" style="max-width: 900px;">
+
+    <!-- Cover Banner -->
+    <div class="position-relative">
+        <img src="{% static 'images/default_profile_pic.png' %}" class="w-100" style="height: 220px; object-fit: cover;" alt="Cover Banner">
+        <div class="position-absolute" style="bottom: -60px; left: 20px;">
+            {% if profile.profile_image %}
+                <img src="{{ profile.profile_image.url }}" class="rounded-circle border border-white shadow" width="120" height="120" style="object-fit: cover;">
+            {% else %}
+                <img src="{% static 'images/default_profile_pic.png' %}" class="rounded-circle border border-white shadow" width="120" height="120">
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Profile Header -->
+    <div class="mt-5 d-flex justify-content-between align-items-center">
+        <div>
+            <h3 class="mb-0">{{ profile.user.get_full_name|default:profile.user.username }}</h3>
+            <p class="text-muted">@{{ profile.user.username }}</p>
+        </div>
+        {% if request.user == profile.user %}
+            <a href="{% url 'update_user' %}" class="btn btn-outline-primary btn-sm">Edit Profile</a>
+        {% else %}
+            <form method="POST" class="d-inline">
+                {% csrf_token %}
+                {% if profile in user.profile.follows.all %}
+                    <button name="follow" value="unfollow" class="btn btn-outline-danger btn-sm">Unfollow</button>
+                {% else %}
+                    <button name="follow" value="follow" class="btn btn-outline-success btn-sm">Follow</button>
+                {% endif %}
+            </form>
+        {% endif %}
+    </div>
+
+    <!-- Bio -->
+    {% if profile.profile_bio %}
+        <p class="mt-2">{{ profile.profile_bio }}</p>
+    {% endif %}
+    <p class="text-muted small">
+        {% if profile.location %}
+            <i class="fa fa-map-marker-alt"></i> {{ profile.location }} &nbsp;&nbsp;
+        {% endif %}
+        <i class="fa fa-birthday-cake"></i> Born {{ profile.date_of_birth|date:"F j, Y" }} &nbsp;&nbsp;
+        <i class="fa fa-calendar-alt"></i> Joined {{ profile.user.date_joined|date:"F Y" }}
+    </p>
+
+    <!-- Social Links -->
+    <div class="mb-3">
+        <span class="h6 text-muted">Social Links: </span>
+        {% if profile.homepage_link %}
+            <a href="{{ profile.homepage_link }}" target="_blank" class="text-muted mx-2"><i class="fa fa-link"></i></a>
+        {% endif %}
+        {% if profile.facebook_link %}
+            <a href="{{ profile.facebook_link }}" target="_blank" class="text-muted mx-2"><i class="fab fa-facebook"></i></a>
+        {% endif %}
+        {% if profile.instagram_link %}
+            <a href="{{ profile.instagram_link }}" target="_blank" class="text-muted mx-2"><i class="fab fa-instagram"></i></a>
+        {% endif %}
+        {% if profile.linkedin_link %}
+            <a href="{{ profile.linkedin_link }}" target="_blank" class="text-muted mx-2"><i class="fab fa-linkedin"></i></a>
+        {% endif %}
+    </div>
+
+    <!-- Followers / Following Stats -->
+    <div class="mb-4">
+        <strong><a href="{% url 'follows' profile.user.id %}" class="text-dark">{{ profile.follows.count }} Following</a></strong> &nbsp;&nbsp;
+        <strong><a href="{% url 'followers' profile.user.id %}" class="text-dark">{{ profile.followed_by.count }} Followers</a></strong>
+    </div>
+
+    <hr/>
+
+    <!-- Posts Section -->
+    <div class="bg-light p-3 rounded shadow-sm">
+        <h5 class="mb-3">All Posts</h5>
+        {% if meeps %}
+            {% for meep in meeps %}
+                <div class="mb-3 p-3 border rounded bg-white">
+                    <div class="d-flex align-items-start">
+                        <div class="me-3">
+                            {% if profile.profile_image %}
+                                <img src="{{ profile.profile_image.url }}" width="50" height="50" class="rounded-circle" style="object-fit: cover;">
+                            {% else %}
+                                <img src="{% static 'images/default_profile_pic.png' %}" width="50" height="50" class="rounded-circle">
+                            {% endif %}
+                        </div>
+                        <div>
+                            <strong>@{{ meep.user.username }}</strong> · 
+                            <small class="text-muted">{{ meep.created_at|date:"M d, Y" }}</small>
+                            <p>{{ meep.body }}</p>
+                            <div class="d-flex align-items-center">
+                                {% if user in meep.likes.all %}
+                                    <a href="{% url 'meep_like' meep.id %}" class="text-danger"><i class="fa fa-heart"></i></a>
+                                {% else %}
+                                    <a href="{% url 'meep_like' meep.id %}" class="text-danger"><i class="fa fa-heart-o"></i></a>
+                                {% endif %}
+                                <small class="ms-2">{{ meep.number_of_likes }}</small>
+                                <a href="{% url 'meep_show' meep.id %}" class="ms-3 text-muted"><i class="fa fa-share"></i></a>
+                                {% if user == meep.user %}
+                                    <a href="{% url 'edit_meep' meep.id %}" class="ms-3 text-muted"><i class="fa fa-edit"></i></a>
+                                    <a href="{% url 'delete_meep' meep.id %}" class="ms-3 text-muted"><i class="fa fa-trash"></i></a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p class="text-muted">No posts yet.</p>
+        {% endif %}
+    </div>
+
+</div>
+{% endif %}
+{% endblock %}
