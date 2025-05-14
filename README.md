@@ -50,7 +50,9 @@ Followers_Page
 
 Edit_Meep_Page
 
-![image](https://github.com/user-attachments/assets/cdd07ba9-9309-4572-b386-f2c2772c2125)
+
+![image](https://github.com/user-attachments/assets/0e3608d1-1071-4413-b04d-3504e731d967)
+
 
 
 
