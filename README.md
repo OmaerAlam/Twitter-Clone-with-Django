@@ -38,6 +38,26 @@ Update/Edit_Profile_Page
 ![image](https://github.com/user-attachments/assets/3d5cdf81-0709-4094-bb36-942f0d145212)
 
 
+Following_Page
+
+![image](https://github.com/user-attachments/assets/ed06797a-d815-4ea4-b911-11dd5be6a34a)
+
+
+Followers_Page
+
+![image](https://github.com/user-attachments/assets/0da2e389-1586-4dc3-a31c-18138516a752)
+
+
+Edit_Meep_Page
+
+![image](https://github.com/user-attachments/assets/cdd07ba9-9309-4572-b386-f2c2772c2125)
+
+
+
+
+
+
+
 
 
 
